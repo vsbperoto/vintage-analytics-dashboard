@@ -279,8 +279,67 @@
         </section>
     </main>
 
+    <!-- MOBILE BOTTOM NAV -->
+    <nav class="mobile-nav">
+        <div class="mobile-nav-items">
+            <button class="mobile-nav-item active" data-tab="dashboard">
+                <span class="icon">📊</span>
+                <span>Табло</span>
+            </button>
+            <button class="mobile-nav-item" data-tab="facebook">
+                <span class="icon">📘</span>
+                <span>Facebook</span>
+            </button>
+            <button class="mobile-nav-item" data-tab="instagram">
+                <span class="icon">📸</span>
+                <span>Instagram</span>
+            </button>
+            <button class="mobile-nav-item" data-tab="tiktok">
+                <span class="icon">🎵</span>
+                <span>TikTok</span>
+            </button>
+            <button class="mobile-nav-item" data-tab="videos">
+                <span class="icon">🎬</span>
+                <span>Видеа</span>
+            </button>
+            <button class="mobile-nav-item" data-tab="calendar">
+                <span class="icon">📅</span>
+                <span>Календар</span>
+            </button>
+        </div>
+    </nav>
+
     <script src="data.js"></script>
     <script src="main.js"></script>
+    <script>
+        // Mobile nav functionality
+        document.querySelectorAll('.mobile-nav-item').forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Update mobile nav
+                document.querySelectorAll('.mobile-nav-item').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                // Update desktop nav too
+                document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+                document.querySelector(`.nav-item[data-tab="${btn.dataset.tab}"]`)?.classList.add('active');
+
+                // Show page
+                document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+                document.getElementById(btn.dataset.tab).classList.add('active');
+
+                // Scroll to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        });
+
+        // Sync desktop nav with mobile nav
+        document.querySelectorAll('.nav-item').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.mobile-nav-item').forEach(b => b.classList.remove('active'));
+                document.querySelector(`.mobile-nav-item[data-tab="${btn.dataset.tab}"]`)?.classList.add('active');
+            });
+        });
+    </script>
 </body>
 
 </html>
