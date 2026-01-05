@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="bg">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Vintage - Instagram Analytics</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg: #0a0a0f;
+            --bg2: #12121a;
+            --card: #1a1a24;
+            --border: rgba(228, 64, 95, 0.2);
+            --ig: #e4405f;
+            --ig2: #c13584;
+            --gold: #f59e0b;
+            --green: #10b981;
+            --text: #fff;
+            --text2: #a1a1aa;
+            --text3: #71717a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .bg-gradient {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(ellipse at 30% 20%, rgba(228, 64, 95, 0.08) 0%, transparent 50%), radial-gradient(ellipse at 70% 80%, rgba(193, 53, 132, 0.06) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #e4405f, #c13584, #f77737);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        header p {
+            color: var(--text2);
+            margin-top: 0.5rem;
+        }
+
+        .mega-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .mega-stat {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .mega-stat .icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .mega-stat .val {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--ig);
+        }
+
+        .mega-stat .lbl {
+            font-size: 0.75rem;
+            color: var(--text3);
+            text-transform: uppercase;
+        }
+
+        .mega-stat.gold .val {
+            color: var(--gold);
+        }
+
+        .mega-stat.green .val {
+            color: var(--green);
+        }
+
+        .section {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+
+        .section h2 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .chart-container {
+            height: 400px;
+            position: relative;
+        }
+
+        .viral-banner {
+            background: linear-gradient(135deg, rgba(228, 64, 95, 0.2), rgba(245, 158, 11, 0.2));
+            border: 2px solid var(--gold);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .viral-banner h2 {
+            font-size: 1.5rem;
+            color: var(--gold);
+            margin-bottom: 1rem;
+        }
+
+        .viral-banner .big-num {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--ig);
+        }
+
+        .viral-banner p {
+            color: var(--text2);
+            margin-top: 0.5rem;
+        }
+
+        .posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1rem;
+        }
+
+        .post-card {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 14px;
+            padding: 1.25rem;
+            border: 1px solid var(--border);
+            transition: transform 0.2s;
+        }
+
+        .post-card:hover {
+            transform: translateY(-4px);
+            background: rgba(228, 64, 95, 0.05);
+        }
+
+        .post-card.viral {
+            border-color: var(--gold);
+            background: rgba(245, 158, 11, 0.1);
+        }
+
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .post-date {
+            font-size: 0.8rem;
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        .post-type {
+            font-size: 0.65rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .post-type.reel {
+            background: rgba(228, 64, 95, 0.2);
+            color: #e4405f;
+        }
+
+        .post-type.story {
+            background: rgba(138, 43, 226, 0.2);
+            color: #9370db;
+        }
+
+        .post-type.carousel {
+            background: rgba(0, 149, 246, 0.2);
+            color: #0095f6;
+        }
+
+        .post-type.photo {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .post-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            line-height: 1.4;
+            max-height: 44px;
+            overflow: hidden;
+        }
+
+        .post-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.4rem;
+        }
+
+        .post-stat {
+            text-align: center;
+            padding: 0.4rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+        }
+
+        .post-stat .v {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--ig);
+        }
+
+        .post-stat .l {
+            font-size: 0.6rem;
+            color: var(--text3);
+        }
+
+        .filter-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-bar select,
+        .filter-bar input {
+            padding: 0.75rem 1rem;
+            background: var(--card);
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-radius: 10px;
+            font-size: 0.9rem;
+        }
+
+        .filter-bar input {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            max-height: 600px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .data-table th {
+            background: rgba(228, 64, 95, 0.1);
+            color: var(--text2);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .data-table tr:hover td {
+            background: rgba(228, 64, 95, 0.05);
+        }
+
+        .data-table .highlight {
+            color: var(--gold);
+            font-weight: 700;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            background: var(--card);
+            color: var(--text2);
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .tab-btn:hover {
+            background: rgba(228, 64, 95, 0.1);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #e4405f, #c13584);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            margin-top: 2rem;
+            border-top: 1px solid var(--border);
+            color: var(--text3);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-gradient"></div>
+    <div class="container">
+        <header>
+            <h1>📸 Instagram Analytics</h1>
+            <p>Restaurant Vintage | 31 Октомври - 31 Декември 2025</p>
+        </header>
+
+        <div class="viral-banner">
+            <h2>🔥 ВИРАЛЕН ПОСТ! 13 Декември 2025</h2>
+            <div class="big-num">374,780</div>
+            <p>прегледа на едно видео! | 201,540 обхват | 3,267 взаимодействия | +130 последователи</p>
+        </div>
+
+        <div class="mega-stats">
+            <div class="mega-stat gold"><span class="icon">📱</span><span class="val" id="totalPosts">140+</span><span
+                    class="lbl">Публикации</span></div>
+            <div class="mega-stat"><span class="icon">👁️</span><span class="val" id="totalViews">496,243</span><span
+                    class="lbl">Прегледи</span></div>
+            <div class="mega-stat"><span class="icon">👥</span><span class="val" id="totalReach">229,100</span><span
+                    class="lbl">Обхват</span></div>
+            <div class="mega-stat"><span class="icon">💬</span><span class="val" id="totalInt">7,600</span><span
+                    class="lbl">Взаимодействия</span></div>
+            <div class="mega-stat"><span class="icon">❤️</span><span class="val" id="totalLikes">5,800+</span><span
+                    class="lbl">Харесвания</span></div>
+            <div class="mega-stat green"><span class="icon">➕</span><span class="val" id="totalFollows">145</span><span
+                    class="lbl">Последователи</span></div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('overview')">📊 Преглед</button>
+            <button class="tab-btn" onclick="showTab('posts')">📱 Всички Постове</button>
+            <button class="tab-btn" onclick="showTab('reels')">🎬 Reels</button>
+            <button class="tab-btn" onclick="showTab('top')">🔥 Топ 10</button>
+            <button class="tab-btn" onclick="showTab('table')">📋 Таблица</button>
+        </div>
+
+        <!-- OVERVIEW -->
+        <div id="overview" class="tab-content active">
+            <div class="section">
+                <h2>📈 Прегледи по Дни</h2>
+                <div class="chart-container"><canvas id="viewsChart"></canvas></div>
+            </div>
+            <div class="section">
+                <h2>📊 Тип Съдържание</h2>
+                <div class="chart-container" style="height:300px"><canvas id="typeChart"></canvas></div>
+            </div>
+        </div>
+
+        <!-- ALL POSTS -->
+        <div id="posts" class="tab-content">
+            <div class="filter-bar">
+                <input type="text" id="searchPosts" placeholder="🔍 Търси по заглавие..." onkeyup="filterPosts()">
+                <select id="filterType" onchange="filterPosts()">
+                    <option value="all">Всички типове</option>
+                    <option value="Reel">Reels</option>
+                    <option value="Story">Stories</option>
+                    <option value="Carousel">Carousels</option>
+                    <option value="Photo">Photos</option>
+                </select>
+                <select id="sortPosts" onchange="sortPosts()">
+                    <option value="date">По дата (нови)</option>
+                    <option value="views">По прегледи (↓)</option>
+                    <option value="interactions">По взаимодействия (↓)</option>
+                </select>
+            </div>
+            <div id="postsGrid" class="posts-grid"></div>
+        </div>
+
+        <!-- REELS -->
+        <div id="reels" class="tab-content">
+            <div class="section">
+                <h2>🎬 Всички Reels</h2>
+                <div id="reelsGrid" class="posts-grid"></div>
+            </div>
+        </div>
+
+        <!-- TOP 10 -->
+        <div id="top" class="tab-content">
+            <div class="section">
+                <h2>🔥 Топ 10 Публикации по Прегледи</h2>
+                <div id="topGrid" class="posts-grid"></div>
+            </div>
+        </div>
+
+        <!-- TABLE -->
+        <div id="table" class="tab-content">
+            <div class="section">
+                <h2>📋 Пълна Таблица с Данни</h2>
+                <div class="table-wrapper" id="fullTable"></div>
+            </div>
+        </div>
+
+        <footer>
+            <p>📸 Instagram Analytics | Restaurant Vintage</p>
+            <p>Генериран от ChronoGranule Analytics ✨</p>
+        </footer>
+    </div>
+
+    <script src="instagram_posts.js"></script>
+    <script>
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Update stats
+        document.getElementById('totalPosts').textContent = igTotals.totalPosts.toLocaleString();
+        document.getElementById('totalViews').textContent = igTotals.totalViews.toLocaleString();
+        document.getElementById('totalInt').textContent = igTotals.totalInteractions.toLocaleString();
+        document.getElementById('totalLikes').textContent = igTotals.totalLikes.toLocaleString();
+        document.getElementById('totalFollows').textContent = igTotals.totalFollows.toLocaleString();
+
+        // Charts
+        Chart.defaults.color = '#a1a1aa';
+
+        // Aggregate views by date
+        const viewsByDate = {};
+        instagramPosts.forEach(p => {
+            viewsByDate[p.date] = (viewsByDate[p.date] || 0) + (p.views || 0);
+        });
+        const dates = Object.keys(viewsByDate).sort();
+        const views = dates.map(d => viewsByDate[d]);
+
+        new Chart(document.getElementById('viewsChart'), {
+            type: 'line',
+            data: {
+                labels: dates.map(d => d.slice(5)),
+                datasets: [{ label: 'Прегледи', data: views, borderColor: '#e4405f', backgroundColor: 'rgba(228,64,95,0.2)', fill: true, tension: 0.4 }]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+
+        // Type distribution
+        const types = { Reel: 0, Story: 0, Carousel: 0, Photo: 0 };
+        instagramPosts.forEach(p => { if (types[p.type] !== undefined) types[p.type]++; });
+        new Chart(document.getElementById('typeChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Reels', 'Stories', 'Carousels', 'Photos'],
+                datasets: [{ data: Object.values(types), backgroundColor: ['#e4405f', '#9370db', '#0095f6', '#10b981'] }]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+
+        // Render posts
+        let postsData = [...instagramPosts];
+
+        function renderPosts(data, containerId) {
+            const grid = document.getElementById(containerId);
+            grid.innerHTML = data.map(p => `
+            <div class="post-card ${p.viral ? 'viral' : ''}">
+                <div class="post-header">
+                    <span class="post-date">📅 ${p.date}</span>
+                    <span class="post-type ${p.type.toLowerCase()}">${p.type}</span>
+                </div>
+                <div class="post-title">${p.title}</div>
+                <div class="post-stats">
+                    <div class="post-stat"><span class="v">${(p.views || 0).toLocaleString()}</span><span class="l">👁️</span></div>
+                    <div class="post-stat"><span class="v">${(p.reach || 0).toLocaleString()}</span><span class="l">👥</span></div>
+                    <div class="post-stat"><span class="v">${p.likes || 0}</span><span class="l">❤️</span></div>
+                    <div class="post-stat"><span class="v">${p.shares || 0}</span><span class="l">🔄</span></div>
+                </div>
+            </div>
+        `).join('');
+        }
+
+        renderPosts(postsData, 'postsGrid');
+        renderPosts(instagramPosts.filter(p => p.type === 'Reel'), 'reelsGrid');
+        renderPosts(topPostsByViews, 'topGrid');
+
+        function filterPosts() {
+            const search = document.getElementById('searchPosts').value.toLowerCase();
+            const type = document.getElementById('filterType').value;
+            let filtered = instagramPosts.filter(p => {
+                const matchSearch = p.title.toLowerCase().includes(search);
+                const matchType = type === 'all' || p.type === type;
+                return matchSearch && matchType;
+            });
+            postsData = filtered;
+            renderPosts(filtered, 'postsGrid');
+        }
+
+        function sortPosts() {
+            const sortBy = document.getElementById('sortPosts').value;
+            let sorted = [...postsData];
+            if (sortBy === 'date') sorted.sort((a, b) => b.date.localeCompare(a.date));
+            if (sortBy === 'views') sorted.sort((a, b) => (b.views || 0) - (a.views || 0));
+            if (sortBy === 'interactions') sorted.sort((a, b) => (b.interactions || 0) - (a.interactions || 0));
+            renderPosts(sorted, 'postsGrid');
+        }
+
+        // Full table
+        document.getElementById('fullTable').innerHTML = `
+        <table class="data-table">
+            <thead><tr><th>Дата</th><th>Тип</th><th>Заглавие</th><th>Прегледи</th><th>Обхват</th><th>Взаим.</th><th>❤️</th><th>💬</th><th>🔄</th><th>+Follow</th></tr></thead>
+            <tbody>${instagramPosts.map(p => `
+                <tr>
+                    <td>${p.date}</td>
+                    <td><span class="post-type ${p.type.toLowerCase()}">${p.type}</span></td>
+                    <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.title}</td>
+                    <td class="${(p.views || 0) > 10000 ? 'highlight' : ''}">${(p.views || 0).toLocaleString()}</td>
+                    <td>${(p.reach || 0).toLocaleString()}</td>
+                    <td>${p.interactions || 0}</td>
+                    <td>${p.likes || 0}</td>
+                    <td>${p.comments || 0}</td>
+                    <td>${p.shares || 0}</td>
+                    <td>${p.follows || 0}</td>
+                </tr>
+            `).join('')}</tbody>
+        </table>
+    `;
+    </script>
+</body>
+
+</html>

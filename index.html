@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="bg">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍷 Restaurant Vintage - Ultimate Analytics Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="bg-gradient"></div>
+
+    <!-- SIDEBAR NAV -->
+    <nav class="sidebar">
+        <div class="sidebar-brand">
+            <span class="brand-icon">🍷</span>
+            <span class="brand-text">Vintage</span>
+        </div>
+        <div class="sidebar-nav">
+            <button class="nav-item active" data-tab="dashboard"><span class="nav-icon">📊</span><span
+                    class="nav-text">Табло</span></button>
+            <button class="nav-item" data-tab="facebook"><span class="nav-icon">📘</span><span
+                    class="nav-text">Facebook</span></button>
+            <button class="nav-item" data-tab="instagram"><span class="nav-icon">📸</span><span
+                    class="nav-text">Instagram</span></button>
+            <button class="nav-item" data-tab="tiktok"><span class="nav-icon">🎵</span><span
+                    class="nav-text">TikTok</span></button>
+            <button class="nav-item" data-tab="videos"><span class="nav-icon">🎬</span><span
+                    class="nav-text">Видеа</span></button>
+            <button class="nav-item" data-tab="calendar"><span class="nav-icon">📅</span><span
+                    class="nav-text">Календар</span></button>
+        </div>
+        <div class="sidebar-footer">
+            <div class="period-badge">31 Окт - 31 Дек 2025</div>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <!-- DASHBOARD -->
+        <section id="dashboard" class="page active">
+            <header class="page-header">
+                <div>
+                    <h1 class="page-title">📊 Общо Табло</h1>
+                    <p class="page-subtitle">Verified данни от Meta Business Suite & TikTok</p>
+                </div>
+            </header>
+
+            <!-- VIRAL BANNER -->
+            <div class="viral-banner">
+                <div class="viral-badge">🔥 ВИРАЛНИ ПОСТОВЕ</div>
+                <div class="viral-cards">
+                    <div class="viral-card fb">
+                        <div class="viral-platform">📘 Facebook</div>
+                        <div class="viral-views">241,146</div>
+                        <div class="viral-date">13 Дек 2025</div>
+                        <div class="viral-meta">+206 последователи</div>
+                    </div>
+                    <div class="viral-card ig">
+                        <div class="viral-platform">📸 Instagram</div>
+                        <div class="viral-views">374,780</div>
+                        <div class="viral-date">13 Дек 2025</div>
+                        <div class="viral-meta">+130 последователи</div>
+                    </div>
+                    <div class="viral-card tt">
+                        <div class="viral-platform">🎵 TikTok</div>
+                        <div class="viral-views">172,353</div>
+                        <div class="viral-date">31 Окт 2025</div>
+                        <div class="viral-meta">🚀 Пусково видео</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MEGA STATS -->
+            <div class="stats-row mega">
+                <div class="stat-card mega rainbow"><span class="stat-icon">🚀</span><span
+                        class="stat-value">1,609,938</span><span class="stat-label">Общо Прегледи</span></div>
+                <div class="stat-card mega gold"><span class="stat-icon">👥</span><span
+                        class="stat-value">1,027,166</span><span class="stat-label">Общ Обхват</span></div>
+                <div class="stat-card mega green"><span class="stat-icon">➕</span><span
+                        class="stat-value">831</span><span class="stat-label">Нови Последователи</span></div>
+            </div>
+
+            <!-- PLATFORM CARDS -->
+            <div class="platform-row">
+                <div class="platform-card fb">
+                    <div class="platform-head"><span class="platform-icon">📘</span>Facebook</div>
+                    <div class="platform-grid">
+                        <div><span class="val">627K</span><span class="lbl">Прегледи</span></div>
+                        <div><span class="val">320K</span><span class="lbl">Обхват</span></div>
+                        <div><span class="val">3.2K</span><span class="lbl">Взаим.</span></div>
+                        <div><span class="val">340</span><span class="lbl">Follow</span></div>
+                    </div>
+                </div>
+                <div class="platform-card ig">
+                    <div class="platform-head"><span class="platform-icon">📸</span>Instagram</div>
+                    <div class="platform-grid">
+                        <div><span class="val">496K</span><span class="lbl">Прегледи</span></div>
+                        <div><span class="val">229K</span><span class="lbl">Обхват</span></div>
+                        <div><span class="val">7.6K</span><span class="lbl">Взаим.</span></div>
+                        <div><span class="val">145</span><span class="lbl">Follow</span></div>
+                    </div>
+                </div>
+                <div class="platform-card tt">
+                    <div class="platform-head"><span class="platform-icon">🎵</span>TikTok</div>
+                    <div class="platform-grid">
+                        <div><span class="val">487K</span><span class="lbl">Прегледи</span></div>
+                        <div><span class="val">478K</span><span class="lbl">Обхват</span></div>
+                        <div><span class="val">6.6K</span><span class="lbl">❤️ Likes</span></div>
+                        <div><span class="val">346</span><span class="lbl">Follow</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CHARTS -->
+            <div class="chart-row">
+                <div class="chart-card">
+                    <h3>📈 Сравнение Платформи</h3>
+                    <div class="chart-wrap"><canvas id="compareChart"></canvas></div>
+                </div>
+                <div class="chart-card">
+                    <h3>📊 Аудитория TikTok</h3>
+                    <div class="chart-wrap"><canvas id="audienceChart"></canvas></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FACEBOOK -->
+        <section id="facebook" class="page">
+            <header class="page-header">
+                <div>
+                    <h1 class="page-title fb-color">📘 Facebook</h1>
+                    <p class="page-subtitle">73 публикации | Verified от Meta</p>
+                </div>
+            </header>
+            <div class="stats-row">
+                <div class="stat-card fb"><span class="stat-icon">👁️</span><span class="stat-value">627K</span><span
+                        class="stat-label">Прегледи</span></div>
+                <div class="stat-card fb"><span class="stat-icon">👥</span><span class="stat-value">320K</span><span
+                        class="stat-label">Обхват</span></div>
+                <div class="stat-card fb"><span class="stat-icon">💬</span><span class="stat-value">3,200</span><span
+                        class="stat-label">Взаимод.</span></div>
+                <div class="stat-card fb"><span class="stat-icon">➕</span><span class="stat-value">340</span><span
+                        class="stat-label">Follow</span></div>
+                <div class="stat-card fb"><span class="stat-icon">🔥</span><span class="stat-value">241K</span><span
+                        class="stat-label">Топ Пост</span></div>
+            </div>
+            <div class="chart-card full">
+                <h3>📈 Facebook Прегледи</h3>
+                <div class="chart-wrap large"><canvas id="fbChart"></canvas></div>
+            </div>
+            <div class="data-card">
+                <div class="card-header">
+                    <h3>📋 Топ Facebook Постове</h3>
+                </div>
+                <div class="table-wrap" id="fbTable"></div>
+            </div>
+        </section>
+
+        <!-- INSTAGRAM -->
+        <section id="instagram" class="page">
+            <header class="page-header">
+                <div>
+                    <h1 class="page-title ig-color">📸 Instagram</h1>
+                    <p class="page-subtitle">140+ публикации | Verified от Meta</p>
+                </div>
+            </header>
+            <div class="viral-highlight"><span class="viral-icon">🔥</span><span class="viral-text">ВИРАЛЕН ПОСТ:
+                    <strong>374,780</strong> прегледа | 13 Декември 2025</span></div>
+            <div class="stats-row">
+                <div class="stat-card ig"><span class="stat-icon">👁️</span><span class="stat-value">496K</span><span
+                        class="stat-label">Прегледи</span></div>
+                <div class="stat-card ig"><span class="stat-icon">👥</span><span class="stat-value">229K</span><span
+                        class="stat-label">Обхват</span></div>
+                <div class="stat-card ig"><span class="stat-icon">💬</span><span class="stat-value">7,600</span><span
+                        class="stat-label">Взаимод.</span></div>
+                <div class="stat-card ig"><span class="stat-icon">🔗</span><span class="stat-value">49</span><span
+                        class="stat-label">Кликове</span></div>
+                <div class="stat-card ig"><span class="stat-icon">➕</span><span class="stat-value">145</span><span
+                        class="stat-label">Follow</span></div>
+            </div>
+            <div class="chart-card full">
+                <h3>📈 Instagram Тренд</h3>
+                <div class="chart-wrap large"><canvas id="igChart"></canvas></div>
+            </div>
+        </section>
+
+        <!-- TIKTOK -->
+        <section id="tiktok" class="page">
+            <header class="page-header">
+                <div>
+                    <h1 class="page-title tt-color">🎵 TikTok</h1>
+                    <p class="page-subtitle">51 видеа | Verified от TikTok Analytics</p>
+                </div>
+            </header>
+            <div class="viral-highlight tt"><span class="viral-icon">🚀</span><span class="viral-text">ПУСКОВО ВИДЕО:
+                    <strong>172,353</strong> прегледа | 31 Октомври 2025</span></div>
+            <div class="stats-row">
+                <div class="stat-card tt"><span class="stat-icon">👁️</span><span class="stat-value">487K</span><span
+                        class="stat-label">Прегледи</span></div>
+                <div class="stat-card tt"><span class="stat-icon">👥</span><span class="stat-value">478K</span><span
+                        class="stat-label">Обхват</span></div>
+                <div class="stat-card tt"><span class="stat-icon">❤️</span><span class="stat-value">6,575</span><span
+                        class="stat-label">Likes</span></div>
+                <div class="stat-card tt"><span class="stat-icon">🔄</span><span class="stat-value">1,932</span><span
+                        class="stat-label">Shares</span></div>
+                <div class="stat-card tt"><span class="stat-icon">➕</span><span class="stat-value">346</span><span
+                        class="stat-label">Follow</span></div>
+            </div>
+            <div class="chart-card full">
+                <h3>📈 TikTok Аудитория</h3>
+                <div class="chart-wrap large"><canvas id="ttChart"></canvas></div>
+            </div>
+            <div class="data-card">
+                <div class="card-header">
+                    <h3>🎬 Всички TikTok Видеа (51)</h3>
+                    <div class="filter-group">
+                        <input type="text" id="ttSearch" class="filter-input" placeholder="🔍 Търси..."
+                            onkeyup="filterTT()">
+                        <select id="ttSort" class="filter-select" onchange="sortTT()">
+                            <option value="views">По прегледи ↓</option>
+                            <option value="date">По дата ↓</option>
+                            <option value="likes">По likes ↓</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="videos-grid" id="ttVideos"></div>
+            </div>
+        </section>
+
+        <!-- VIDEOS -->
+        <section id="videos" class="page">
+            <header class="page-header">
+                <div>
+                    <h1 class="page-title">🎬 Всички Видеа по Дата</h1>
+                    <p class="page-subtitle">Сравнение между платформите</p>
+                </div>
+            </header>
+            <div class="filter-bar">
+                <input type="text" id="videoSearch" class="filter-input" placeholder="🔍 Търси по дата или заглавие...">
+                <select id="videoSort" class="filter-select">
+                    <option value="dateDesc">По дата (нови) ↓</option>
+                    <option value="dateAsc">По дата (стари) ↑</option>
+                    <option value="views">По прегледи ↓</option>
+                </select>
+                <select id="videoPlatform" class="filter-select">
+                    <option value="all">Всички платформи</option>
+                    <option value="fb">Facebook</option>
+                    <option value="ig">Instagram</option>
+                    <option value="tt">TikTok</option>
+                </select>
+            </div>
+            <div id="videosGrid" class="day-cards"></div>
+        </section>
+
+        <!-- CALENDAR -->
+        <section id="calendar" class="page">
+            <header class="page-header">
+                <div>
+                    <h1 class="page-title">📅 Календар</h1>
+                    <p class="page-subtitle">Декември 2025</p>
+                </div>
+            </header>
+            <div class="calendar-nav">
+                <button class="cal-btn" data-month="11">◀ Ноември</button>
+                <span class="cal-month">Декември 2025</span>
+                <button class="cal-btn disabled">Януари ▶</button>
+            </div>
+            <div class="calendar-grid" id="calendarGrid"></div>
+            <div class="calendar-legend">
+                <span class="legend-item"><span class="dot viral"></span> Вирален ден (100K+ views)</span>
+                <span class="legend-item"><span class="dot high"></span> Висок трафик (10K-100K)</span>
+                <span class="legend-item"><span class="dot normal"></span> Нормален ден</span>
+            </div>
+        </section>
+    </main>
+
+    <script src="data.js"></script>
+    <script src="main.js"></script>
+</body>
+
+</html>

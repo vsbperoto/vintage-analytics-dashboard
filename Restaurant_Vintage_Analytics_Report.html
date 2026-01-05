@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Vintage - Facebook Analytics Report</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: #1a1a24;
+            --bg-card-hover: #22222e;
+            --accent-primary: #8b5cf6;
+            --accent-secondary: #a78bfa;
+            --accent-tertiary: #c4b5fd;
+            --accent-gold: #f59e0b;
+            --accent-gold-light: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --accent-blue: #3b82f6;
+            --accent-pink: #ec4899;
+            --text-primary: #ffffff;
+            --text-secondary: #a1a1aa;
+            --text-muted: #71717a;
+            --border-color: rgba(139, 92, 246, 0.2);
+            --glass-bg: rgba(26, 26, 36, 0.8);
+            --shadow-glow: 0 0 40px rgba(139, 92, 246, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* Animated Background */
+        .bg-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse at 20% 20%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(245, 158, 11, 0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(16, 185, 129, 0.04) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 3rem 2rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-glow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-gold), var(--accent-green));
+        }
+
+        .header h1 {
+            font-size: 2.75rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-tertiary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .header .subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .header .date-range {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(139, 92, 246, 0.1));
+            border-radius: 50px;
+            font-size: 0.9rem;
+            color: var(--accent-tertiary);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 1.75rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            background: var(--bg-card-hover);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+        }
+
+        .stat-card.purple::before { background: var(--accent-primary); }
+        .stat-card.gold::before { background: var(--accent-gold); }
+        .stat-card.green::before { background: var(--accent-green); }
+        .stat-card.blue::before { background: var(--accent-blue); }
+        .stat-card.pink::before { background: var(--accent-pink); }
+        .stat-card.red::before { background: var(--accent-red); }
+
+        .stat-card .icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-card.purple .icon { background: rgba(139, 92, 246, 0.2); }
+        .stat-card.gold .icon { background: rgba(245, 158, 11, 0.2); }
+        .stat-card.green .icon { background: rgba(16, 185, 129, 0.2); }
+        .stat-card.blue .icon { background: rgba(59, 130, 246, 0.2); }
+        .stat-card.pink .icon { background: rgba(236, 72, 153, 0.2); }
+        .stat-card.red .icon { background: rgba(239, 68, 68, 0.2); }
+
+        .stat-card .label {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card .value {
+            font-size: 2.25rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-card.purple .value { color: var(--accent-primary); }
+        .stat-card.gold .value { color: var(--accent-gold); }
+        .stat-card.green .value { color: var(--accent-green); }
+        .stat-card.blue .value { color: var(--accent-blue); }
+        .stat-card.pink .value { color: var(--accent-pink); }
+        .stat-card.red .value { color: var(--accent-red); }
+
+        .stat-card .change {
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .stat-card .change.positive { color: var(--accent-green); }
+        .stat-card .change.negative { color: var(--accent-red); }
+
+        /* Section Headers */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .section-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .section-header .line {
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, var(--border-color), transparent);
+        }
+
+        /* Charts */
+        .chart-container {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+
+        .chart-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 350px;
+        }
+
+        /* Two Column Layout */
+        .two-columns {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Tables */
+        .data-table {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .data-table h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+            color: var(--text-primary);
+        }
+
+        .data-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 0.875rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .data-table th {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .data-table td {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .data-table tr:hover td {
+            background: rgba(139, 92, 246, 0.05);
+        }
+
+        .data-table .rank {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.875rem;
+        }
+
+        .data-table .rank.gold {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--accent-gold);
+        }
+
+        .data-table .rank.silver {
+            background: rgba(161, 161, 170, 0.2);
+            color: var(--text-secondary);
+        }
+
+        .data-table .rank.bronze {
+            background: rgba(180, 83, 9, 0.2);
+            color: #d97706;
+        }
+
+        .data-table .percentage {
+            font-weight: 600;
+            color: var(--accent-primary);
+        }
+
+        /* Demographics */
+        .demographics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .demo-card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .demo-card h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+            color: var(--text-primary);
+        }
+
+        .demo-bar {
+            margin-bottom: 1rem;
+        }
+
+        .demo-bar .label-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .demo-bar .label {
+            color: var(--text-secondary);
+        }
+
+        .demo-bar .value {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .demo-bar .bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .demo-bar .bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .demo-bar .bar-fill.women {
+            background: linear-gradient(90deg, var(--accent-pink), #f472b6);
+        }
+
+        .demo-bar .bar-fill.men {
+            background: linear-gradient(90deg, var(--accent-blue), #60a5fa);
+        }
+
+        /* Content Format Cards */
+        .format-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .format-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .format-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .format-card .emoji {
+            font-size: 2.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .format-card .format-name {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .format-card .format-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* Insights */
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .insight-card {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(139, 92, 246, 0.05));
+            border-radius: 20px;
+            padding: 1.75rem;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+        }
+
+        .insight-card .insight-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .insight-card h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--accent-tertiary);
+            margin-bottom: 0.75rem;
+        }
+
+        .insight-card p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.75rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .two-columns {
+                grid-template-columns: 1fr;
+            }
+
+            .demographics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stat-card, .chart-container, .data-table, .demo-card, .insight-card {
+            animation: fadeInUp 0.5s ease forwards;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-gradient"></div>
+    
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>🍷 Restaurant Vintage</h1>
+            <p class="subtitle">Facebook Page Analytics Report</p>
+            <div class="date-range">
+                📅 October 31, 2025 — December 31, 2025 (62 Days)
+            </div>
+        </header>
+
+        <!-- Key Metrics -->
+        <div class="stats-grid">
+            <div class="stat-card purple">
+                <div class="icon">👁️</div>
+                <div class="label">Total Views</div>
+                <div class="value">761,454</div>
+                <div class="change positive">↗ Reels dominate with 572K views</div>
+            </div>
+            <div class="stat-card gold">
+                <div class="icon">👥</div>
+                <div class="label">Unique Viewers</div>
+                <div class="value">407,158</div>
+                <div class="change positive">↗ Peak: 53,233 on Dec 14</div>
+            </div>
+            <div class="stat-card green">
+                <div class="icon">➕</div>
+                <div class="label">New Followers</div>
+                <div class="value">383</div>
+                <div class="change positive">↗ +68 followers on best day</div>
+            </div>
+            <div class="stat-card blue">
+                <div class="icon">💬</div>
+                <div class="label">Content Interactions</div>
+                <div class="value">6,492</div>
+                <div class="change positive">↗ Avg 105 per day</div>
+            </div>
+            <div class="stat-card pink">
+                <div class="icon">🔗</div>
+                <div class="label">Link Clicks</div>
+                <div class="value">1,133</div>
+                <div class="change positive">↗ Peak: 130 on Dec 27</div>
+            </div>
+            <div class="stat-card red">
+                <div class="icon">📍</div>
+                <div class="label">Page Visits</div>
+                <div class="value">12,810</div>
+                <div class="change positive">↗ Avg 207 visits/day</div>
+            </div>
+        </div>
+
+        <!-- Views Chart -->
+        <div class="section-header">
+            <h2>📊 Performance Over Time</h2>
+            <div class="line"></div>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-title">Daily Views & Viewers Trend</div>
+            <div class="chart-wrapper">
+                <canvas id="viewsChart"></canvas>
+            </div>
+        </div>
+
+        <div class="two-columns">
+            <div class="chart-container">
+                <div class="chart-title">Daily New Followers</div>
+                <div class="chart-wrapper">
+                    <canvas id="followersChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">Daily Interactions</div>
+                <div class="chart-wrapper">
+                    <canvas id="interactionsChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Performance -->
+        <div class="section-header">
+            <h2>🎬 Content Format Performance</h2>
+            <div class="line"></div>
+        </div>
+
+        <div class="format-grid">
+            <div class="format-card">
+                <div class="emoji">🎥</div>
+                <div class="format-name">Reels</div>
+                <div class="format-value">572,681</div>
+            </div>
+            <div class="format-card">
+                <div class="emoji">📸</div>
+                <div class="format-name">Multi-photo</div>
+                <div class="format-value">86,208</div>
+            </div>
+            <div class="format-card">
+                <div class="emoji">🔗</div>
+                <div class="format-name">Links</div>
+                <div class="format-value">79,536</div>
+            </div>
+            <div class="format-card">
+                <div class="emoji">🖼️</div>
+                <div class="format-name">Photos</div>
+                <div class="format-value">22,287</div>
+            </div>
+            <div class="format-card">
+                <div class="emoji">📝</div>
+                <div class="format-name">Text</div>
+                <div class="format-value">329</div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-title">Views by Content Type</div>
+            <div class="chart-wrapper">
+                <canvas id="contentChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Published Content -->
+        <div class="section-header">
+            <h2>📅 Published Content Summary</h2>
+            <div class="line"></div>
+        </div>
+
+        <div class="format-grid">
+            <div class="format-card">
+                <div class="emoji">🎥</div>
+                <div class="format-name">Reels Published</div>
+                <div class="format-value">46</div>
+            </div>
+            <div class="format-card">
+                <div class="emoji">🖼️</div>
+                <div class="format-name">Photos Published</div>
+                <div class="format-value">30</div>
+            </div>
+            <div class="format-card">
+                <div class="emoji">📖</div>
+                <div class="format-name">Stories Published</div>
+                <div class="format-value">13</div>
+            </div>
+            <div class="format-card">
+                <div class="emoji">🔗</div>
+                <div class="format-name">Links Published</div>
+                <div class="format-value">2</div>
+            </div>
+            <div class="format-card">
+                <div class="emoji">📝</div>
+                <div class="format-name">Text Posts</div>
+                <div class="format-value">1</div>
+            </div>
+        </div>
+
+        <!-- Audience Demographics -->
+        <div class="section-header">
+            <h2>👥 Audience Demographics</h2>
+            <div class="line"></div>
+        </div>
+
+        <div class="demographics-grid">
+            <div class="demo-card">
+                <h3>👩 Women by Age Group</h3>
+                <div class="demo-bar">
+                    <div class="label-row">
+                        <span class="label">35-44</span>
+                        <span class="value">20.6%</span>
+                    </div>
+                    <div class="bar"><div class="bar-fill women" style="width: 100%"></div></div>
+                </div>
+                <div class="demo-bar">
+                    <div class="label-row">
+                        <span class="label">25-34</span>
+                        <span class="value">17.6%</span>
+                    </div>
+                    <div class="bar"><div class="bar-fill women" style="width: 85%"></div></div>
+                </div>
+                <div class="demo-bar">
+                    <div class="label-row">
+                        <span class="label">45-54</span>
+                        <span class="value">15.0%</span>
+                    </div>
+                    <div class="bar"><div class="bar-fill women" style="width: 73%"></div></div>
+                </div>
+                <div class="demo-bar">
+                    <div class="label-row">
+                        <span class="label">55-64</span>
+                        <span class="value">8.9%</span>
+                    </div>
+                    <div class="bar"><div class="bar-fill women" style="width: 43%"></div></div>
+                </div>
+                <div class="demo-bar">
+                    <div class="label-row">
+                        <span class="label">65+</span>
+                        <span class="value">4.1%</span>
+                    </div>
+                    <div class="bar"><div class="bar-fill women" style="width: 20%"></div></div>
+                </div>
+                <div class="demo-bar">
+                    <div class="label-row">
+                        <span class="label">18-24</span>
+                        <span class="value">3.4%</span>
+                    </div>
+                    <div class="bar"><div class="bar-fill women" style="width: 16%"></div></div>
+                </div>
+            </div>
+
+            <div class="demo-card">
+                <h3>👨 Men by Age Group</h3>
+                <div class="demo-bar">
+                    <div class="label-row">
+                        <span class="label">35-44</span>
+                        <span class="value">9.8%</span>
+                    </div>
+                    <div class="bar"><div class="bar-fill men" style="width: 100%"></div></div>
+                </div>
+                <div class="demo-bar">
+                    <div class="label-row">
+                        <span class="label">25-34</span>
+                        <span class="value">8.1%</span>
+                    </div>
+                    <div class="bar"><div class="bar-fill men" style="width: 83%"></div></div>
+                </div>
+                <div class="demo-bar">
+                    <div class="label-row">
+                        <span class="label">45-54</span>
+                        <span class="value">6.5%</span>
+                    </div>
+                    <div class="bar"><div class="bar-fill men" style="width: 66%"></div></div>
+                </div>
+                <div class="demo-bar">
+                    <div class="label-row">
+                        <span class="label">55-64</span>
+                        <span class="value">2.6%</span>
+                    </div>
+                    <div class="bar"><div class="bar-fill men" style="width: 27%"></div></div>
+                </div>
+                <div class="demo-bar">
+                    <div class="label-row">
+                        <span class="label">65+</span>
+                        <span class="value">1.8%</span>
+                    </div>
+                    <div class="bar"><div class="bar-fill men" style="width: 18%"></div></div>
+                </div>
+                <div class="demo-bar">
+                    <div class="label-row">
+                        <span class="label">18-24</span>
+                        <span class="value">1.6%</span>
+                    </div>
+                    <div class="bar"><div class="bar-fill men" style="width: 16%"></div></div>
+                </div>
+            </div>
+
+            <div class="demo-card">
+                <h3>⚖️ Gender Split</h3>
+                <div style="text-align: center; padding: 2rem 0;">
+                    <div style="display: flex; justify-content: center; gap: 2rem; margin-bottom: 1rem;">
+                        <div>
+                            <div style="font-size: 3rem; margin-bottom: 0.5rem;">👩</div>
+                            <div style="font-size: 2rem; font-weight: 700; color: var(--accent-pink);">69.6%</div>
+                            <div style="color: var(--text-muted);">Women</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 3rem; margin-bottom: 0.5rem;">👨</div>
+                            <div style="font-size: 2rem; font-weight: 700; color: var(--accent-blue);">30.4%</div>
+                            <div style="color: var(--text-muted);">Men</div>
+                        </div>
+                    </div>
+                    <p style="color: var(--text-secondary); font-size: 0.875rem; margin-top: 1rem;">
+                        Primary audience: Women aged 35-44
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Geographic Data -->
+        <div class="section-header">
+            <h2>🌍 Geographic Distribution</h2>
+            <div class="line"></div>
+        </div>
+
+        <div class="two-columns">
+            <div class="data-table">
+                <h3>🏙️ Top Cities</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>City</th>
+                            <th>% of Audience</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><div class="rank gold">1</div></td>
+                            <td>Pleven, Bulgaria</td>
+                            <td class="percentage">74.3%</td>
+                        </tr>
+                        <tr>
+                            <td><div class="rank silver">2</div></td>
+                            <td>Sofia, Bulgaria</td>
+                            <td class="percentage">4.1%</td>
+                        </tr>
+                        <tr>
+                            <td><div class="rank bronze">3</div></td>
+                            <td>Plovdiv, Bulgaria</td>
+                            <td class="percentage">1.0%</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>Varna, Bulgaria</td>
+                            <td class="percentage">1.0%</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>Dolni Dabnik, Bulgaria</td>
+                            <td class="percentage">0.8%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Dolna Mitropolia, Bulgaria</td>
+                            <td class="percentage">0.7%</td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td>Gulyantsi, Bulgaria</td>
+                            <td class="percentage">0.5%</td>
+                        </tr>
+                        <tr>
+                            <td>8</td>
+                            <td>Pordim, Bulgaria</td>
+                            <td class="percentage">0.5%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="data-table">
+                <h3>🌐 Top Countries</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Country</th>
+                            <th>% of Audience</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><div class="rank gold">1</div></td>
+                            <td>🇧🇬 Bulgaria</td>
+                            <td class="percentage">98.4%</td>
+                        </tr>
+                        <tr>
+                            <td><div class="rank silver">2</div></td>
+                            <td>🇩🇪 Germany</td>
+                            <td class="percentage">0.9%</td>
+                        </tr>
+                        <tr>
+                            <td><div class="rank bronze">3</div></td>
+                            <td>🇬🇧 United Kingdom</td>
+                            <td class="percentage">0.9%</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>🇪🇸 Spain</td>
+                            <td class="percentage">0.6%</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>🇧🇪 Belgium</td>
+                            <td class="percentage">0.3%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>🇮🇹 Italy</td>
+                            <td class="percentage">0.3%</td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td>🇦🇹 Austria</td>
+                            <td class="percentage">0.2%</td>
+                        </tr>
+                        <tr>
+                            <td>8</td>
+                            <td>🇨🇿 Czech Republic</td>
+                            <td class="percentage">0.2%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Top Referral Pages -->
+        <div class="section-header">
+            <h2>📎 Top Referral Pages</h2>
+            <div class="line"></div>
+        </div>
+
+        <div class="data-table">
+            <h3>Pages Sending Traffic to Your Page</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Page Name</th>
+                        <th>Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><div class="rank gold">1</div></td>
+                        <td>Novini.bg</td>
+                        <td class="percentage">22.78</td>
+                    </tr>
+                    <tr>
+                        <td><div class="rank silver">2</div></td>
+                        <td>Petel.bg</td>
+                        <td class="percentage">22.08</td>
+                    </tr>
+                    <tr>
+                        <td><div class="rank bronze">3</div></td>
+                        <td>За Жената (Woman.bg)</td>
+                        <td class="percentage">20.15</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>Woman.bg</td>
+                        <td class="percentage">19.14</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>VMzona</td>
+                        <td class="percentage">17.22</td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td>Mobile.bg</td>
+                        <td class="percentage">16.38</td>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td>Gospodari</td>
+                        <td class="percentage">15.35</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Key Insights -->
+        <div class="section-header">
+            <h2>💡 Key Insights & Recommendations</h2>
+            <div class="line"></div>
+        </div>
+
+        <div class="insights-grid">
+            <div class="insight-card">
+                <div class="insight-icon">🎥</div>
+                <h4>Reels Are Your Superpower</h4>
+                <p>Reels account for <strong>75.2%</strong> of all views (572K out of 761K). Keep producing short-form video content - it's clearly resonating with your audience!</p>
+            </div>
+            <div class="insight-card">
+                <div class="insight-icon">📈</div>
+                <h4>Viral Spike on Dec 13-14</h4>
+                <p>You had an incredible spike with <strong>100K+ views</strong> and <strong>68 new followers</strong> on December 14th. Analyze what content you posted those days and replicate it!</p>
+            </div>
+            <div class="insight-card">
+                <div class="insight-icon">👩</div>
+                <h4>Target Demographic: Women 35-44</h4>
+                <p>Your core audience is <strong>women aged 35-44</strong> from Pleven. Tailor your content, special offers, and messaging to this demographic for maximum engagement.</p>
+            </div>
+            <div class="insight-card">
+                <div class="insight-icon">🏠</div>
+                <h4>Strong Local Presence</h4>
+                <p><strong>74.3%</strong> of your audience is from Pleven. You're dominating your local market! Consider geo-targeted promotions for locals.</p>
+            </div>
+            <div class="insight-card">
+                <div class="insight-icon">🔗</div>
+                <h4>Link Clicks Trending Up</h4>
+                <p>December saw strong link click performance, peaking at <strong>130 clicks</strong> on Dec 27. Christmas promotions were clearly effective!</p>
+            </div>
+            <div class="insight-card">
+                <div class="insight-icon">📅</div>
+                <h4>Post Consistency Matters</h4>
+                <p>Days with <strong>zero posts</strong> (like Dec 6-7) show dramatically lower engagement. Maintain a consistent posting schedule for best results.</p>
+            </div>
+        </div>
+
+        <!-- Performance Summary -->
+        <div class="section-header">
+            <h2>📊 Period Summary</h2>
+            <div class="line"></div>
+        </div>
+
+        <div class="chart-container">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; text-align: center;">
+                <div>
+                    <div style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.5rem;">Best Day for Views</div>
+                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--accent-primary);">Dec 14, 2025</div>
+                    <div style="font-size: 0.875rem; color: var(--text-secondary);">100,338 views</div>
+                </div>
+                <div>
+                    <div style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.5rem;">Best Day for Followers</div>
+                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--accent-gold);">Dec 14, 2025</div>
+                    <div style="font-size: 0.875rem; color: var(--text-secondary);">+68 new followers</div>
+                </div>
+                <div>
+                    <div style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.5rem;">Best Day for Interactions</div>
+                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--accent-green);">Dec 14, 2025</div>
+                    <div style="font-size: 0.875rem; color: var(--text-secondary);">616 interactions</div>
+                </div>
+                <div>
+                    <div style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.5rem;">Best Day for Link Clicks</div>
+                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--accent-pink);">Dec 27, 2025</div>
+                    <div style="font-size: 0.875rem; color: var(--text-secondary);">130 clicks</div>
+                </div>
+                <div>
+                    <div style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.5rem;">Average Daily Views</div>
+                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--accent-blue);">12,281</div>
+                    <div style="font-size: 0.875rem; color: var(--text-secondary);">per day</div>
+                </div>
+                <div>
+                    <div style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.5rem;">Total Content Published</div>
+                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--accent-tertiary);">92</div>
+                    <div style="font-size: 0.875rem; color: var(--text-secondary);">posts in 62 days</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>📊 Analytics Report Generated for <strong>Restaurant Vintage</strong></p>
+            <p>Data Period: October 31, 2025 — December 31, 2025</p>
+            <p style="margin-top: 0.5rem; color: var(--accent-tertiary);">Powered by ChronoGranule Analytics ✨</p>
+        </footer>
+    </div>
+
+    <script>
+        // Chart.js Configuration
+        Chart.defaults.color = '#a1a1aa';
+        Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.05)';
+
+        // Data
+        const dates = ['Oct 31', 'Nov 1', 'Nov 2', 'Nov 3', 'Nov 4', 'Nov 5', 'Nov 6', 'Nov 7', 'Nov 8', 'Nov 9', 'Nov 10', 'Nov 11', 'Nov 12', 'Nov 13', 'Nov 14', 'Nov 15', 'Nov 16', 'Nov 17', 'Nov 18', 'Nov 19', 'Nov 20', 'Nov 21', 'Nov 22', 'Nov 23', 'Nov 24', 'Nov 25', 'Nov 26', 'Nov 27', 'Nov 28', 'Nov 29', 'Nov 30', 'Dec 1', 'Dec 2', 'Dec 3', 'Dec 4', 'Dec 5', 'Dec 6', 'Dec 7', 'Dec 8', 'Dec 9', 'Dec 10', 'Dec 11', 'Dec 12', 'Dec 13', 'Dec 14', 'Dec 15', 'Dec 16', 'Dec 17', 'Dec 18', 'Dec 19', 'Dec 20', 'Dec 21', 'Dec 22', 'Dec 23', 'Dec 24', 'Dec 25', 'Dec 26', 'Dec 27', 'Dec 28', 'Dec 29', 'Dec 30', 'Dec 31'];
+
+        const views = [5213, 4216, 4594, 2699, 4916, 11767, 2002, 5660, 5324, 3197, 2869, 7937, 2661, 2728, 2213, 2906, 2988, 11362, 7353, 5405, 3621, 9444, 7439, 3801, 6561, 4407, 3270, 4683, 4471, 7098, 5564, 6903, 6677, 5179, 6138, 3846, 1773, 1156, 4669, 10646, 8629, 15311, 11668, 95903, 100338, 30011, 21316, 18298, 18114, 12854, 16659, 7178, 8851, 6062, 12756, 17166, 23943, 33208, 31178, 29419, 25289, 11947];
+
+        const viewers = [1148, 762, 286, 277, 1068, 1011, 1010, 3776, 3094, 1959, 1364, 5654, 1162, 1212, 1071, 1256, 1737, 7204, 3850, 2583, 1765, 6207, 4487, 2081, 3800, 2698, 1857, 2955, 1916, 4394, 4177, 3934, 3861, 2917, 3421, 2019, 956, 423, 2862, 6824, 5569, 9053, 7849, 49184, 53233, 17556, 10811, 9471, 10290, 8232, 10339, 3813, 4707, 3253, 9037, 12601, 18050, 21967, 19793, 17902, 14122, 7449];
+
+        const followers = [4, 2, 3, 0, 1, 9, 0, 5, 1, 0, 2, 4, 1, 1, 2, 0, 2, 6, 3, 2, 1, 4, 3, 3, 4, 2, 1, 2, 0, 2, 1, 2, 0, 1, 3, 1, 0, 1, 1, 11, 5, 4, 6, 58, 68, 17, 10, 6, 11, 3, 8, 5, 4, 4, 0, 3, 9, 18, 29, 20, 17, 5];
+
+        const interactions = [185, 87, 44, 20, 102, 98, 138, 45, 94, 93, 55, 40, 64, 112, 11, 62, 80, 117, 89, 26, 125, 53, 106, 28, 129, 75, 19, 78, 70, 68, 12, 102, 82, 66, 127, 67, 3, 55, 110, 103, 36, 124, 88, 607, 616, 198, 141, 149, 134, 115, 72, 41, 121, 83, 39, 38, 121, 164, 178, 153, 131, 103];
+
+        // Views & Viewers Chart
+        new Chart(document.getElementById('viewsChart'), {
+            type: 'line',
+            data: {
+                labels: dates,
+                datasets: [
+                    {
+                        label: 'Views',
+                        data: views,
+                        borderColor: '#8b5cf6',
+                        backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        pointHoverRadius: 6
+                    },
+                    {
+                        label: 'Viewers',
+                        data: viewers,
+                        borderColor: '#f59e0b',
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        pointHoverRadius: 6
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    }
+                }
+            }
+        });
+
+        // Followers Chart
+        new Chart(document.getElementById('followersChart'), {
+            type: 'bar',
+            data: {
+                labels: dates,
+                datasets: [{
+                    label: 'New Followers',
+                    data: followers,
+                    backgroundColor: 'rgba(16, 185, 129, 0.6)',
+                    borderColor: '#10b981',
+                    borderWidth: 1,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+
+        // Interactions Chart
+        new Chart(document.getElementById('interactionsChart'), {
+            type: 'line',
+            data: {
+                labels: dates,
+                datasets: [{
+                    label: 'Interactions',
+                    data: interactions,
+                    borderColor: '#ec4899',
+                    backgroundColor: 'rgba(236, 72, 153, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+
+        // Content Type Chart
+        new Chart(document.getElementById('contentChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Reels', 'Multi-photo', 'Links', 'Photos', 'Others', 'Text'],
+                datasets: [{
+                    data: [572681, 86208, 79536, 22287, 413, 329],
+                    backgroundColor: [
+                        'rgba(139, 92, 246, 0.8)',
+                        'rgba(59, 130, 246, 0.8)',
+                        'rgba(16, 185, 129, 0.8)',
+                        'rgba(245, 158, 11, 0.8)',
+                        'rgba(107, 114, 128, 0.8)',
+                        'rgba(236, 72, 153, 0.8)'
+                    ],
+                    borderColor: '#1a1a24',
+                    borderWidth: 3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '60%',
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true,
+                            pointStyle: 'circle'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
