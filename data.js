@@ -139,7 +139,8 @@ const allData = {
         { date: "2025-12-14", type: "Reel", title: "Не сме просто служители, ние сме част от интериора", views: 21775, reach: 12528, interactions: 72, likes: 71, follows: 8 },
         { date: "2025-12-16", type: "Reel", title: "Ние не просто сервираме храна, ние предлагаме решения", views: 23419, reach: 12380, interactions: 80, likes: 75, follows: 6 },
         { date: "2025-12-27", type: "Reel", title: "Класика в жанра! Управителят ще влезе точно в секундата", views: 12917, reach: 8925, interactions: 63, likes: 56, follows: 6 },
-        { date: "2025-12-30", type: "Reel", title: "POV: Броиш дните до 05.01", views: 27966, reach: 17684, interactions: 87, likes: 78, follows: 14 }
+        { date: "2025-12-30", type: "Reel", title: "POV: Броиш дните до 05.01", views: 27966, reach: 17684, interactions: 87, likes: 78, follows: 14 },
+        { date: "2025-12-31", type: "Reel", title: "✨ Равносметка в последния ден на годината", views: 3160, reach: 2803, interactions: 60, likes: 57, follows: 1 }
     ],
 
     // ========== INSTAGRAM DAILY DATA ==========
@@ -152,21 +153,21 @@ const allData = {
         { date: "2025-12-14", views: 50545, reach: 29103, interactions: 896, follows: 18, clicks: 2, visits: 139 },
         { date: "2025-12-15", views: 71236, reach: 39788, interactions: 858, follows: 6, clicks: 2, visits: 143 },
         { date: "2025-12-16", views: 41577, reach: 22754, interactions: 479, follows: 8, clicks: 1, visits: 77 },
-        { date: "2025-12-30", views: 16014, reach: 9833, interactions: 313, follows: 5, clicks: 0, visits: 35 },
-        { date: "2025-12-31", views: 18812, reach: 11638, interactions: 426, follows: 3, clicks: 0, visits: 48 }
+        { date: "2025-12-30", views: 26027, reach: 17556, interactions: 473, follows: 16, clicks: 0, visits: 35 },
+        { date: "2025-12-31", views: 1088, reach: 762, interactions: 55, follows: 1, clicks: 0, visits: 48 }
     ],
 
     // ========== VERIFIED TOTALS ==========
     totals: {
-        facebook: { views: 627000, reach: 320000, interactions: 3200, followers: 340, posts: 73, viralPosts: 2, topViralViews: 241146 },
-        instagram: { views: 496243, reach: 229100, interactions: 7600, followers: 145, posts: 140, clicks: 49, visits: 1929, topViralViews: 374780 },
+        facebook: { views: 630160, reach: 322803, interactions: 3260, followers: 341, posts: 74, viralPosts: 2, topViralViews: 241146 },
+        instagram: { views: 497331, reach: 229862, interactions: 7655, followers: 146, posts: 140, clicks: 49, visits: 1977, topViralViews: 374780 },
         tiktok: { views: 486695, reach: 478066, likes: 6575, shares: 1932, comments: 716, followers: 346, videos: 51, topViralViews: 172353 }
     },
 
     combined: {
-        totalViews: 1609938,
-        totalReach: 1027166,
-        totalFollowers: 831,
+        totalViews: 1614186,
+        totalReach: 1030731,
+        totalFollowers: 833,
         viralDays: ["2025-10-31", "2025-12-11", "2025-12-13", "2025-12-14", "2025-12-26", "2025-12-27", "2025-12-30"]
     }
 };
