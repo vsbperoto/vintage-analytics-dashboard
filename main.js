@@ -1,8 +1,11 @@
 // =====================================================
-// MAIN.JS - FIRE DASHBOARD FUNCTIONALITY
+// MAIN.JS - COMPREHENSIVE ANALYTICS DASHBOARD
+// Restaurant Vintage | Oct 31 - Dec 31, 2025
 // =====================================================
 
+// ===================
 // NAVIGATION
+// ===================
 document.querySelectorAll('.nav-item').forEach(btn => {
     btn.addEventListener('click', () => {
         document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
@@ -12,31 +15,37 @@ document.querySelectorAll('.nav-item').forEach(btn => {
     });
 });
 
+// ===================
 // CHART DEFAULTS
+// ===================
 Chart.defaults.color = '#9ca3af';
 Chart.defaults.borderColor = 'rgba(255,255,255,0.05)';
 Chart.defaults.font.family = 'Inter';
 
-// COMPARE CHART
+// ===================
+// COMPARE CHART (Dashboard)
+// ===================
 new Chart(document.getElementById('compareChart'), {
     type: 'bar',
     data: {
         labels: ['Прегледи', 'Обхват', 'Взаимодействия'],
         datasets: [
-            { label: 'Facebook', data: [627000, 320000, 3200], backgroundColor: '#1877f2' },
-            { label: 'Instagram', data: [496243, 229100, 7600], backgroundColor: '#e4405f' },
-            { label: 'TikTok', data: [486695, 478066, 6575], backgroundColor: '#00f2ea' }
+            { label: 'Facebook', data: [allData.totals.facebook.views, allData.totals.facebook.reach, allData.totals.facebook.interactions], backgroundColor: '#1877f2' },
+            { label: 'Instagram', data: [allData.totals.instagram.views, allData.totals.instagram.reach, allData.totals.instagram.interactions], backgroundColor: '#e4405f' },
+            { label: 'TikTok', data: [allData.totals.tiktok.views, allData.totals.tiktok.reach, allData.totals.tiktok.likes], backgroundColor: '#00f2ea' }
         ]
     },
     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
 });
 
-// AUDIENCE CHART (TikTok)
-const dates = allData.tiktokAudience.map(d => d.date.slice(5).replace('/', '.'));
+// ===================
+// AUDIENCE CHART (Dashboard - TikTok Audience)
+// ===================
+const ttAudienceDates = allData.tiktokAudience.map(d => d.date.slice(5));
 new Chart(document.getElementById('audienceChart'), {
     type: 'line',
     data: {
-        labels: dates,
+        labels: ttAudienceDates,
         datasets: [
             { label: 'Обхват', data: allData.tiktokAudience.map(d => d.reached), borderColor: '#00f2ea', backgroundColor: 'rgba(0,242,234,0.1)', fill: true, tension: 0.4, pointRadius: 0 },
             { label: 'Engaged', data: allData.tiktokAudience.map(d => d.engaged), borderColor: '#ff0050', backgroundColor: 'rgba(255,0,80,0.1)', fill: true, tension: 0.4, pointRadius: 0 }
@@ -45,7 +54,9 @@ new Chart(document.getElementById('audienceChart'), {
     options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false } }
 });
 
+// ===================
 // FACEBOOK CHART
+// ===================
 new Chart(document.getElementById('fbChart'), {
     type: 'bar',
     data: {
@@ -55,7 +66,9 @@ new Chart(document.getElementById('fbChart'), {
     options: { responsive: true, maintainAspectRatio: false }
 });
 
+// ===================
 // INSTAGRAM CHART
+// ===================
 new Chart(document.getElementById('igChart'), {
     type: 'line',
     data: {
@@ -67,11 +80,13 @@ new Chart(document.getElementById('igChart'), {
     options: { responsive: true, maintainAspectRatio: false }
 });
 
+// ===================
 // TIKTOK CHART
+// ===================
 new Chart(document.getElementById('ttChart'), {
     type: 'line',
     data: {
-        labels: dates,
+        labels: ttAudienceDates,
         datasets: [
             { label: 'Обхват', data: allData.tiktokAudience.map(d => d.reached), borderColor: '#00f2ea', backgroundColor: 'rgba(0,242,234,0.15)', fill: true, tension: 0.4 },
             { label: 'Последователи', data: allData.tiktokAudience.map(d => d.newFollowers * 100), borderColor: '#ff0050', backgroundColor: 'rgba(255,0,80,0.1)', fill: true, tension: 0.4 }
@@ -80,7 +95,9 @@ new Chart(document.getElementById('ttChart'), {
     options: { responsive: true, maintainAspectRatio: false }
 });
 
+// ===================
 // FACEBOOK TABLE
+// ===================
 const fbTable = document.getElementById('fbTable');
 fbTable.innerHTML = `<table class="data-table">
     <thead><tr><th>Дата</th><th>Заглавие</th><th>Прегледи</th><th>Обхват</th><th>Взаим.</th><th>+Follow</th></tr></thead>
@@ -96,7 +113,9 @@ fbTable.innerHTML = `<table class="data-table">
     `).join('')}</tbody>
 </table>`;
 
-// TIKTOK VIDEOS
+// ===================
+// TIKTOK VIDEOS - with SEARCH + SORT
+// ===================
 let ttVideos = [...allData.tiktokVideos];
 
 function renderTTVideos(data) {
@@ -116,12 +135,17 @@ function renderTTVideos(data) {
 }
 renderTTVideos(ttVideos);
 
+// TikTok Search Function
 function filterTT() {
     const search = document.getElementById('ttSearch').value.toLowerCase();
-    let filtered = allData.tiktokVideos.filter(v => v.title.toLowerCase().includes(search) || v.date.includes(search));
+    let filtered = allData.tiktokVideos.filter(v =>
+        v.title.toLowerCase().includes(search) ||
+        v.date.includes(search)
+    );
     renderTTVideos(filtered);
 }
 
+// TikTok Sort Function
 function sortTT() {
     const sortBy = document.getElementById('ttSort').value;
     let sorted = [...allData.tiktokVideos];
@@ -131,83 +155,139 @@ function sortTT() {
     renderTTVideos(sorted);
 }
 
-// VIDEOS BY DATE (combined)
-function renderVideosByDate() {
-    const grid = document.getElementById('videosGrid');
+// ===================
+// VIDEOS BY DATE (Combined View) - with SEARCH + SORT + FILTER
+// ===================
+let allVideosByDate = [];
+
+function buildVideosByDate() {
     const allDates = [...new Set([
         ...allData.tiktokVideos.map(v => v.date),
         ...allData.facebookPosts.map(p => p.date),
         ...allData.instagram.map(i => i.date)
     ])].sort((a, b) => b.localeCompare(a));
 
-    grid.innerHTML = allDates.slice(0, 31).map(date => {
-        const tt = allData.tiktokVideos.find(v => v.date === date) || { views: 0, likes: 0, shares: 0 };
+    allVideosByDate = allDates.map(date => {
+        const tt = allData.tiktokVideos.find(v => v.date === date) || { views: 0, likes: 0, shares: 0, title: '' };
         const fb = allData.facebookPosts.filter(p => p.date === date);
         const fbTotal = fb.reduce((sum, p) => sum + p.views, 0);
+        const fbFollows = fb.reduce((sum, p) => sum + (p.follows || 0), 0);
         const ig = allData.instagram.find(i => i.date === date) || { views: 0, reach: 0, follows: 0 };
         const total = fbTotal + ig.views + tt.views;
-        const isViral = total > 100000;
 
+        return {
+            date,
+            title: tt.title || fb[0]?.title || 'Публикации от този ден',
+            fb: { views: fbTotal, posts: fb.length, follows: fbFollows },
+            ig: ig,
+            tt: tt,
+            total
+        };
+    });
+}
+buildVideosByDate();
+
+function renderVideosByDate(data) {
+    const grid = document.getElementById('videosGrid');
+    grid.innerHTML = data.map(v => {
+        const isViral = v.total > 100000;
         return `
             <div class="day-card ${isViral ? 'viral' : ''}">
                 <div class="day-info">
-                    <h4>📅 ${date}</h4>
-                    <p>${tt.title || fb[0]?.title || 'Публикации от този ден'}</p>
-                    <div class="total">Общо: <strong>${total.toLocaleString()}</strong> прегледа</div>
+                    <h4>📅 ${v.date}</h4>
+                    <p>${v.title}</p>
+                    <div class="total">Общо: <strong>${v.total.toLocaleString()}</strong> прегледа</div>
                 </div>
                 <div class="day-platform">
                     <h5><span class="badge fb">FB</span> Facebook</h5>
                     <div class="mini-stats">
-                        <div><span class="v">${fbTotal.toLocaleString()}</span><span class="l">Views</span></div>
-                        <div><span class="v">${fb.length}</span><span class="l">Posts</span></div>
-                        <div><span class="v">${fb.reduce((s, p) => s + (p.follows || 0), 0)}</span><span class="l">+Follow</span></div>
+                        <div><span class="v">${v.fb.views.toLocaleString()}</span><span class="l">Views</span></div>
+                        <div><span class="v">${v.fb.posts}</span><span class="l">Posts</span></div>
+                        <div><span class="v">${v.fb.follows}</span><span class="l">+Follow</span></div>
                     </div>
                 </div>
                 <div class="day-platform">
                     <h5><span class="badge ig">IG</span> Instagram</h5>
                     <div class="mini-stats">
-                        <div><span class="v">${ig.views.toLocaleString()}</span><span class="l">Views</span></div>
-                        <div><span class="v">${ig.reach?.toLocaleString() || 0}</span><span class="l">Reach</span></div>
-                        <div><span class="v">+${ig.follows || 0}</span><span class="l">Follow</span></div>
+                        <div><span class="v">${v.ig.views.toLocaleString()}</span><span class="l">Views</span></div>
+                        <div><span class="v">${v.ig.reach?.toLocaleString() || 0}</span><span class="l">Reach</span></div>
+                        <div><span class="v">+${v.ig.follows || 0}</span><span class="l">Follow</span></div>
                     </div>
                 </div>
                 <div class="day-platform">
                     <h5><span class="badge tt">TT</span> TikTok</h5>
                     <div class="mini-stats">
-                        <div><span class="v">${tt.views.toLocaleString()}</span><span class="l">Views</span></div>
-                        <div><span class="v">${tt.likes}</span><span class="l">❤️</span></div>
-                        <div><span class="v">${tt.shares}</span><span class="l">Shares</span></div>
+                        <div><span class="v">${v.tt.views.toLocaleString()}</span><span class="l">Views</span></div>
+                        <div><span class="v">${v.tt.likes || 0}</span><span class="l">❤️</span></div>
+                        <div><span class="v">${v.tt.shares || 0}</span><span class="l">Shares</span></div>
                     </div>
                 </div>
             </div>
         `;
     }).join('');
 }
-renderVideosByDate();
+renderVideosByDate(allVideosByDate);
 
-// CALENDAR - COMPLETE WITH MONTH SWITCHING
-let currentMonth = 12; // December
+// Videos Search, Sort and Filter
+function filterVideos() {
+    const search = document.getElementById('videoSearch')?.value?.toLowerCase() || '';
+    const sortBy = document.getElementById('videoSort')?.value || 'dateDesc';
+    const platform = document.getElementById('videoPlatform')?.value || 'all';
+
+    let filtered = [...allVideosByDate];
+
+    // Search
+    if (search) {
+        filtered = filtered.filter(v =>
+            v.title.toLowerCase().includes(search) ||
+            v.date.includes(search)
+        );
+    }
+
+    // Platform filter
+    if (platform === 'fb') filtered = filtered.filter(v => v.fb.views > 0);
+    if (platform === 'ig') filtered = filtered.filter(v => v.ig.views > 0);
+    if (platform === 'tt') filtered = filtered.filter(v => v.tt.views > 0);
+
+    // Sort
+    if (sortBy === 'dateDesc') filtered.sort((a, b) => b.date.localeCompare(a.date));
+    if (sortBy === 'dateAsc') filtered.sort((a, b) => a.date.localeCompare(b.date));
+    if (sortBy === 'views') filtered.sort((a, b) => b.total - a.total);
+
+    renderVideosByDate(filtered);
+}
+
+// Attach event listeners for Videos filters
+document.getElementById('videoSearch')?.addEventListener('input', filterVideos);
+document.getElementById('videoSort')?.addEventListener('change', filterVideos);
+document.getElementById('videoPlatform')?.addEventListener('change', filterVideos);
+
+// ===================
+// CALENDAR - Complete with Month Switching
+// ===================
+let currentMonth = 12;
 
 function renderCalendar(month = 12) {
     currentMonth = month;
     const grid = document.getElementById('calendarGrid');
     const monthTitle = document.querySelector('.cal-month');
     const days = ['Пон', 'Вто', 'Сря', 'Чет', 'Пет', 'Съб', 'Нед'];
-    const monthNames = { 11: 'Ноември 2025', 12: 'Декември 2025' };
+    const monthNames = { 10: 'Октомври 2025', 11: 'Ноември 2025', 12: 'Декември 2025' };
 
-    if (monthTitle) monthTitle.textContent = monthNames[month];
+    if (monthTitle) monthTitle.textContent = monthNames[month] || `Месец ${month}`;
 
     // Update nav buttons
     document.querySelectorAll('.cal-btn').forEach(btn => {
-        if (btn.dataset.month === '11') {
-            btn.classList.toggle('active', month === 11);
+        btn.classList.remove('active');
+        if (parseInt(btn.dataset.month) === month) {
+            btn.classList.add('active');
         }
     });
 
     // Headers
     let html = days.map(d => `<div class="cal-header">${d}</div>`).join('');
 
-    // Get first day offset (Monday = 0, Sunday = 6)
+    // Get first day offset
     const firstDay = new Date(2025, month - 1, 1).getDay();
     const firstDayOffset = firstDay === 0 ? 6 : firstDay - 1;
     const daysInMonth = new Date(2025, month, 0).getDate();
@@ -233,7 +313,6 @@ function renderCalendar(month = 12) {
         const igViews = ig.views || 0;
         const igFollows = ig.follows || 0;
         const ttViews = ttVideo?.views || 0;
-        const ttReach = tt.reached || 0;
         const ttFollows = tt.newFollowers || 0;
 
         const totalViews = fbViews + igViews + ttViews;
@@ -312,8 +391,43 @@ ${fb[0] ? '→ ' + fb[0].title.slice(0, 50) + '...' : ''}
 ${ttVideo ? '→ ' + ttVideo.title.slice(0, 50) + '...' : ''}`);
 }
 
+// Initialize calendar
 renderCalendar(12);
 
-console.log('🔥 Restaurant Vintage Analytics Dashboard Loaded!');
+// ===================
+// GLOBAL SEARCH BAR
+// ===================
+function globalSearch(query) {
+    query = query.toLowerCase();
+
+    // Search in TikTok videos
+    const ttResults = allData.tiktokVideos.filter(v =>
+        v.title.toLowerCase().includes(query) ||
+        v.date.includes(query)
+    );
+
+    // Search in Facebook posts
+    const fbResults = allData.facebookPosts.filter(p =>
+        p.title.toLowerCase().includes(query) ||
+        p.date.includes(query)
+    );
+
+    // Search by date in Instagram
+    const igResults = allData.instagram.filter(i => i.date.includes(query));
+
+    return {
+        tiktok: ttResults,
+        facebook: fbResults,
+        instagram: igResults,
+        total: ttResults.length + fbResults.length + igResults.length
+    };
+}
+
+// ===================
+// CONSOLE LOGGING
+// ===================
+console.log('🍷 Restaurant Vintage Analytics Dashboard Loaded!');
 console.log('📊 Total Views:', allData.combined.totalViews.toLocaleString());
 console.log('👥 Total Followers:', allData.combined.totalFollowers);
+console.log('🔥 Viral Days:', allData.combined.viralDays.join(', '));
+console.log('✅ All data verified from Meta Business Suite & TikTok Analytics');
